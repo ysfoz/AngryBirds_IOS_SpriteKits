@@ -15,6 +15,16 @@ class GameScene: SKScene {
 //    var bird2 = SKSpriteNode()
 //    var bird3 = SKSpriteNode()
     
+    //
+    
+    var bird = SKSpriteNode()
+    var box1 = SKSpriteNode()
+    var box2 = SKSpriteNode()
+    var box3 = SKSpriteNode()
+    var box4 = SKSpriteNode()
+    var box5 = SKSpriteNode()
+    
+    
     override func didMove(to view: SKView) {
         
 //        let texture = SKTexture(imageNamed: "bird")
@@ -29,6 +39,69 @@ class GameScene: SKScene {
 //        bird3.size = CGSize(width: 100, height: 100)
 //        bird3.zPosition = 1
 //        self.addChild(bird3)
+        
+        self.physicsBody = SKPhysicsBody(edgeLoopFrom: frame) // ekrani bir cerceve olarak belirliyor
+        self.scene?.scaleMode = .aspectFit // ekran ile scene boyutlarini ayarlamak icin
+        
+        //BIRD
+        
+        bird = childNode(withName: "bird") as! SKSpriteNode
+        
+        let birdTexture = SKTexture(imageNamed: "bird")
+        
+        bird.physicsBody = SKPhysicsBody(circleOfRadius: birdTexture.size().height / 11) // boyutu gibi, cevresindeki cember
+        bird.physicsBody?.affectedByGravity = false // yer cekimi
+        bird.physicsBody?.isDynamic = true // etkisi varmi
+        bird.physicsBody?.mass = 0.15 // kutle
+        
+//        BOXES
+        
+        let boxTexture = SKTexture(imageNamed: "brick")
+        let size = CGSize(width: boxTexture.size().width / 6, height: boxTexture.size().height / 6)
+        
+        box1 = childNode(withName: "box1") as! SKSpriteNode
+        box1.physicsBody = SKPhysicsBody(rectangleOf: size)
+        box1.physicsBody?.isDynamic = true
+        box1.physicsBody?.affectedByGravity = true
+        box1.physicsBody?.allowsRotation = true // donmesi icin
+        box1.physicsBody?.mass = 0.4
+        
+        
+        box2 = childNode(withName: "box2") as! SKSpriteNode
+        box2.physicsBody = SKPhysicsBody(rectangleOf: size)
+        box2.physicsBody?.isDynamic = true
+        box2.physicsBody?.affectedByGravity = true
+        box2.physicsBody?.allowsRotation = true // donmesi icin
+        box2.physicsBody?.mass = 0.4
+        
+        
+        box3 = childNode(withName: "box3") as! SKSpriteNode
+        box3.physicsBody = SKPhysicsBody(rectangleOf: size)
+        box3.physicsBody?.isDynamic = true
+        box3.physicsBody?.affectedByGravity = true
+        box3.physicsBody?.allowsRotation = true // donmesi icin
+        box3.physicsBody?.mass = 0.4
+        
+        
+        box4 = childNode(withName: "box4") as! SKSpriteNode
+        box4.physicsBody = SKPhysicsBody(rectangleOf: size)
+        box4.physicsBody?.isDynamic = true
+        box4.physicsBody?.affectedByGravity = true
+        box4.physicsBody?.allowsRotation = true // donmesi icin
+        box4.physicsBody?.mass = 0.4
+        
+        box5 = childNode(withName: "box5") as! SKSpriteNode
+        box5.physicsBody = SKPhysicsBody(rectangleOf: size)
+        box5.physicsBody?.isDynamic = true
+        box5.physicsBody?.affectedByGravity = true
+        box5.physicsBody?.allowsRotation = true // donmesi icin
+        box5.physicsBody?.mass = 0.4
+        
+        
+       
+        
+        
+        
         
     }
     
@@ -46,6 +119,8 @@ class GameScene: SKScene {
     }
     
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
+        bird.physicsBody?.affectedByGravity = true
+        bird.physicsBody?.applyImpulse(CGVector(dx: 50, dy: 100))
         
     }
     
