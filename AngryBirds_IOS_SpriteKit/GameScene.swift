@@ -8,7 +8,7 @@
 import SpriteKit
 import GameplayKit
 
-class GameScene: SKScene {
+class GameScene: SKScene, SKPhysicsContactDelegate {
     
 //    GameScene uzerinden eklemek yerine bu sekilde el ile nesneleri eklemek daha dogru, alt kisimd da ozellikleri veriliyor.
     
@@ -28,6 +28,14 @@ class GameScene: SKScene {
     
     var firstPosition : CGPoint?
     
+    var score = 0
+    var scoreLabel = SKLabelNode()
+    
+    enum ColliderType : UInt32 {
+        case Bird = 1
+        case Box = 2
+    }
+    
     
     override func didMove(to view: SKView) {
         
@@ -46,6 +54,7 @@ class GameScene: SKScene {
         
         self.physicsBody = SKPhysicsBody(edgeLoopFrom: frame) // ekrani bir cerceve olarak belirliyor
         self.scene?.scaleMode = .aspectFit // ekran ile scene boyutlarini ayarlamak icin
+        self.physicsWorld.contactDelegate = self // contact lari algilamak icin
         
         //BIRD
         
@@ -59,6 +68,12 @@ class GameScene: SKScene {
         bird.physicsBody?.mass = 0.15 // kutle
         firstPosition = bird.position
         
+        // carpistiginda algilamasi icin
+        
+        bird.physicsBody?.contactTestBitMask = ColliderType.Box.rawValue
+        bird.physicsBody?.categoryBitMask = ColliderType.Box.rawValue
+        bird.physicsBody?.collisionBitMask = ColliderType.Box.rawValue
+        
 //        BOXES
         
         let boxTexture = SKTexture(imageNamed: "brick")
@@ -69,7 +84,10 @@ class GameScene: SKScene {
         box1.physicsBody?.isDynamic = true
         box1.physicsBody?.affectedByGravity = true
         box1.physicsBody?.allowsRotation = true // donmesi icin
-        box1.physicsBody?.mass = 0.4
+        box1.physicsBody?.mass = 0.2
+        
+        // carpismalari algiliyor
+        box1.physicsBody?.collisionBitMask = ColliderType.Bird.rawValue
         
         
         box2 = childNode(withName: "box2") as! SKSpriteNode
@@ -77,7 +95,9 @@ class GameScene: SKScene {
         box2.physicsBody?.isDynamic = true
         box2.physicsBody?.affectedByGravity = true
         box2.physicsBody?.allowsRotation = true // donmesi icin
-        box2.physicsBody?.mass = 0.4
+        box2.physicsBody?.mass = 0.2
+        
+        box2.physicsBody?.collisionBitMask = ColliderType.Bird.rawValue
         
         
         box3 = childNode(withName: "box3") as! SKSpriteNode
@@ -85,7 +105,9 @@ class GameScene: SKScene {
         box3.physicsBody?.isDynamic = true
         box3.physicsBody?.affectedByGravity = true
         box3.physicsBody?.allowsRotation = true // donmesi icin
-        box3.physicsBody?.mass = 0.4
+        box3.physicsBody?.mass = 0.2
+        
+        box3.physicsBody?.collisionBitMask = ColliderType.Bird.rawValue
         
         
         box4 = childNode(withName: "box4") as! SKSpriteNode
@@ -93,21 +115,37 @@ class GameScene: SKScene {
         box4.physicsBody?.isDynamic = true
         box4.physicsBody?.affectedByGravity = true
         box4.physicsBody?.allowsRotation = true // donmesi icin
-        box4.physicsBody?.mass = 0.4
+        box4.physicsBody?.mass = 0.2
+        
+        box4.physicsBody?.collisionBitMask = ColliderType.Bird.rawValue
         
         box5 = childNode(withName: "box5") as! SKSpriteNode
         box5.physicsBody = SKPhysicsBody(rectangleOf: size)
         box5.physicsBody?.isDynamic = true
         box5.physicsBody?.affectedByGravity = true
         box5.physicsBody?.allowsRotation = true // donmesi icin
-        box5.physicsBody?.mass = 0.4
+        box5.physicsBody?.mass = 0.2
+        
+        box5.physicsBody?.collisionBitMask = ColliderType.Bird.rawValue
         
         
-       
+        // LABEL
         
+        scoreLabel.fontName = "Helvatica"
+        scoreLabel.fontSize = 60
+        scoreLabel.text = "0"
+        scoreLabel.position = CGPoint(x: 0, y: self.frame.height / 4)
+        scoreLabel.zPosition = 2
+        self.addChild(scoreLabel)
         
-        
-        
+
+    }
+    
+    func didBegin(_ contact: SKPhysicsContact) {
+        if contact.bodyA.collisionBitMask == ColliderType.Bird.rawValue || contact.bodyB.collisionBitMask == ColliderType.Bird.rawValue {
+            score += 1
+            scoreLabel.text = String(score)
+        }
     }
     
     
@@ -201,6 +239,22 @@ class GameScene: SKScene {
     
     
     override func update(_ currentTime: TimeInterval) {
+        
+        if let birdPhsicsBody = bird.physicsBody {
+            if birdPhsicsBody.velocity.dx <= 0.1 && birdPhsicsBody.velocity.dy <= 0.1 && birdPhsicsBody.angularVelocity <= 0.1 && gameStarted == true {
+                
+                
+                bird.physicsBody?.affectedByGravity = false
+                bird.physicsBody?.velocity = CGVector(dx: 0, dy: 0)
+                bird.physicsBody?.angularVelocity = 0
+                bird.zPosition = 1
+                bird.position = firstPosition!
+                gameStarted = false
+                
+                score = 0
+                scoreLabel.text = "0"
+            }
+        }
         
     }
 }
